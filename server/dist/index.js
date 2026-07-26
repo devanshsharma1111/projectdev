@@ -7,7 +7,7 @@ import paymentRoutes from "./routes/payment.js";
 import cors from "cors";
 import Razorpay from "razorpay";
 import axios from "axios";
-const url = `https://ai-career-backend-q7xn.onrender.com`;
+const url = `https://ai-career-backend-jc99.onrender.com`;
 const interval = 30000;
 function reloadWebsite() {
     axios
@@ -30,6 +30,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.get("/", (req, res) => {
+    res.send("Server is running");
+});
 app.use("/api/user", userRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/payment", paymentRoutes);
