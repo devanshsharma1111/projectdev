@@ -12,7 +12,15 @@ import {
 
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY_GEMINI! });
+const getAIClient = () => {
+  const apiKey = process.env.API_KEY_GEMINI;
+  if (!apiKey || !apiKey.trim()) {
+    throw new Error(
+      "Gemini API key is missing. Please set API_KEY_GEMINI in server/.env file."
+    );
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export const analyseResume = TryCatch(
   async (req: AuthenticatedRequest, res) => {
@@ -32,8 +40,9 @@ export const analyseResume = TryCatch(
       });
     }
 
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       contents: [
         {
           role: "user",
@@ -110,8 +119,9 @@ export const jobMatcher = TryCatch(async (req: AuthenticatedRequest, res) => {
     });
   }
 
+  const ai = getAIClient();
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-pro",
+    model: "gemini-2.5-flash",
     contents: [{ role: "user", parts }],
   });
 
@@ -178,8 +188,9 @@ export const generateInterview = TryCatch(
       });
     }
 
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       contents: [{ role: "user", parts }],
     });
 
@@ -244,8 +255,9 @@ export const buildResume = TryCatch(async (req: AuthenticatedRequest, res) => {
     });
   }
 
+  const ai = getAIClient();
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-pro",
+    model: "gemini-2.5-flash",
     contents: [{ role: "user", parts }],
   });
 

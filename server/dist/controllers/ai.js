@@ -4,7 +4,13 @@ import TryCatch from "../middlewares/trycatch.js";
 import User from "../models/User.js";
 import { buildResumePrompt, generateInterviewPrompt, JobMatcherPrompt, ResumeAnalyserPrompt, } from "../config/prompt.js";
 dotenv.config();
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY_GEMINI });
+const getAIClient = () => {
+    const apiKey = process.env.API_KEY_GEMINI;
+    if (!apiKey || !apiKey.trim()) {
+        throw new Error("Gemini API key is missing. Please set API_KEY_GEMINI in server/.env file.");
+    }
+    return new GoogleGenAI({ apiKey });
+};
 export const analyseResume = TryCatch(async (req, res) => {
     const { pdfBase64 } = req.body;
     if (!pdfBase64) {
@@ -18,8 +24,9 @@ export const analyseResume = TryCatch(async (req, res) => {
             message: "Upgrade Your plan to continue",
         });
     }
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-2.5-flash",
         contents: [
             {
                 role: "user",
@@ -84,8 +91,9 @@ export const jobMatcher = TryCatch(async (req, res) => {
             },
         });
     }
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-2.5-flash",
         contents: [{ role: "user", parts }],
     });
     const rawText = response.text?.replace(/```json|```/g, "").trim();
@@ -139,8 +147,9 @@ export const generateInterview = TryCatch(async (req, res) => {
             },
         });
     }
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-2.5-flash",
         contents: [{ role: "user", parts }],
     });
     const rawText = response.text?.replace(/```json|```/g, "").trim();
@@ -192,8 +201,9 @@ export const buildResume = TryCatch(async (req, res) => {
             },
         });
     }
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-2.5-flash",
         contents: [{ role: "user", parts }],
     });
     const rawText = response.text?.replace(/```json|```/g, "").trim();
